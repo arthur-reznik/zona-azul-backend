@@ -47,22 +47,6 @@ const checkUser = async (req, res, next) => {
         dToken = decodedToken;
     });
 
-    // let cars = await Cars.find({
-    //     user_id: user._id
-    // });
-    // //n tem praq dexar a senha exposta tmb ne
-    // user.password = "";
-
-    // //NAO TO CONSEGUINDO ALTERAR A ESTRUTURA DO RESULTADO DA QUERY, n queria ter q mandar 2 json, pensei em mandar 1 direto com tudo e foda-se hummmmm
-    // user = JSON.stringify(user);
-    // cars = JSON.stringify(cars);
-    // let retorno = {
-    //     ...user,
-    //     ...cars
-    // };
-    // //user.cars = [cars];
-    // console.log(retorno);
-
     //acho q da pra escolhar quais campos pegar mas preguica
     let dbUser = await User.findById(dToken.id);
     user = {
@@ -72,6 +56,7 @@ const checkUser = async (req, res, next) => {
 
     //só pros teste com express
     res.locals.user = user;
+    res.user = user;
     next();
 };
 

@@ -65,11 +65,12 @@ module.exports.userSignup_post = async (req, res) => {
 
         res.cookie('jwt', token, {
             httpOnly: true,
-            maxAge: maxAge * 1000
+            maxAge: maxAge
         });
 
-        res.status(201).json({
-            user: user._id
+        res.status(200).json({
+            user: user._id,
+            token
         });
 
     } catch (err) {
@@ -98,7 +99,8 @@ module.exports.login_post = async (req, res) => {
             maxAge: maxAge * 1000
         });
         res.status(200).json({
-            user: user._id
+            user: user._id,
+            token
         });
 
     } catch (err) {
@@ -124,7 +126,7 @@ module.exports.carRegister_post = async (req, res) => {
         modelo
     } = req.body;
 
-    const token = req.cookies.jwt;
+    let token = req.header("token");
     let novoCarro = {
         placa,
         tipo,
@@ -154,7 +156,7 @@ module.exports.carRegister_post = async (req, res) => {
 
 module.exports.addCredit_post = async (req, res) => {
 
-    const token = req.cookies.jwt;
+    let token = req.header("token");
     const creditos = req.body.creditos;
     let dToken;
 
@@ -232,16 +234,14 @@ module.exports.estacionar_post = async (req, res) => {
 
 module.exports.get_carros = async (req, res) => {
 
-    const token = req.cookies.jwt;
+    let token = req.header("token");
 
     let dToken;
-    console.log("=================");
-    console.log(jwt);
 
     jwt.verify(token, jwtConfig.key, (err, decodedToken) => {
         console.log("entrou no if");
         if (err) {
-            console.log("ERRO==========");
+            // console.log("ERRO==========");
             console.log(err.message);
             return;
         }
@@ -265,25 +265,22 @@ module.exports.temp = (req, res) => {
 }
 
 module.exports.get_saldo = async (req, res) => {
-
-    const token = req.cookies.jwt;
-
     let dToken;
-
-    await jwt.verify(token, jwtConfig.key, async (err, decodedToken) => {
+    let token = req.header("token");
+    await jwt.verify(token, jwtConfig.key, (err, decodedToken) => {
         if (err) {
             console.log("ERRO:", err.message);
             return;
         }
-        console.log("DFGHJ", decodedToken);
         dToken = decodedToken;
+        console.log("dtoken1:", dToken)
     });
 
 
-    console.log(dToken);
-    const user = await User.find({
-        id_user: dToken.id
-    });
+    console.log("dtoken2:", dToken)
+    const user = (await User.find({
+        _id: dToken.id
+    }))[0];
     console.log(user);
     res.send({
         saldo: user.saldo
