@@ -140,18 +140,19 @@ module.exports.carRegister_post = async (req, res) => {
         return res.sendStatus(500);
     }
 
-    let decodedUser = jwt.verify(token, jwtConfig.key, (err, decodedToken) => {
+    jwt.verify(token, jwtConfig.key, (err, decodedToken) => {
         if (err) {
             console.log(err.message);
             return;
         }
         dToken = decodedToken;
     });
-    novoCarro.id_user = dtoken.id;
-    let user = await User.findById(dToken.id);
-    novoCarro.user_id = user._id;
+
+    novoCarro.id_user = dToken.id;
     Carro.create(novoCarro);
-    res.sendStatus(200);
+    res.send({
+        message: "Carro inserido com sucesso."
+    });
 };
 
 module.exports.addCredit_post = async (req, res) => {
