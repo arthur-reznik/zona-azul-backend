@@ -28,7 +28,6 @@ const checkUser = async (req, res, next) => {
     //funcao pra pegar os dados do usuario atual
     //e repassar pro front
     //ai da pra mostrar as infos dele na tela ou qlqer coisa q queira elas
-
     const token = req.cookies.jwt;
     let dToken;
     if (!token) {
@@ -36,8 +35,10 @@ const checkUser = async (req, res, next) => {
         res.locals.user = null;
         return next();
     }
+
     jwt.verify(token, jwtConfig.key, (err, decodedToken) => {
         if (err) {
+            console.log("ERRO CHECKUSER =========");
             console.log(err.message);
             res.user = null;
             res.locals.user = null;

@@ -235,15 +235,19 @@ module.exports.get_carros = async (req, res) => {
     const token = req.cookies.jwt;
 
     let dToken;
+    console.log("=================");
+    console.log(jwt);
 
     jwt.verify(token, jwtConfig.key, (err, decodedToken) => {
+        console.log("entrou no if");
         if (err) {
+            console.log("ERRO==========");
             console.log(err.message);
             return;
         }
         dToken = decodedToken;
+        console.log(dToken);
     });
-
 
     //console.log(dToken.id);
     const carros = await Carro.find({
