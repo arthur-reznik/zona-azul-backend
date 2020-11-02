@@ -32,6 +32,9 @@ router.post('/estacionar', authController.estacionar_post);
 //retorna um vetor com os carros do usuario
 router.get('/get-carros', authController.get_carros);
 
+//retorna saldo do usuario
+router.get('/get-saldo', authController.get_saldo);
+
 //todo
 router.get('/dashboard', authController.temp); //n sei se precisa disso ou oq fazer com isso
 

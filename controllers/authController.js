@@ -259,3 +259,30 @@ module.exports.get_carros = async (req, res) => {
 module.exports.temp = (req, res) => {
     res.render('temp');
 }
+
+module.exports.get_saldo = async (req, res) => {
+
+    const token = req.cookies.jwt;
+
+    let dToken;
+
+    await jwt.verify(token, jwtConfig.key, async (err, decodedToken) => {
+        if (err) {
+            console.log("ERRO:", err.message);
+            return;
+        }
+        console.log("DFGHJ", decodedToken);
+        dToken = decodedToken;
+    });
+
+
+    console.log(dToken);
+    const user = await User.find({
+        id_user: dToken.id
+    });
+    console.log(user);
+    res.send({
+        saldo: user.saldo
+    });
+
+};

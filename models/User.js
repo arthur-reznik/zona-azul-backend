@@ -8,14 +8,14 @@ const userSchema = new mongoose.Schema({
     nome: {
         type: String,
         required: [true, 'nome obrigatorio'],
-        unique: true,
+        unique: false,
         lowercase: true
     },
 
     sobrenome: {
         type: String,
         required: [true, 'sobrenome obrigatorio'],
-        unique: true,
+        unique: false,
         lowercase: true
     },
 
