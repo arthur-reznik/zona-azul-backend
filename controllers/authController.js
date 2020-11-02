@@ -158,7 +158,7 @@ module.exports.carRegister_post = async (req, res) => {
 module.exports.addCredit_post = async (req, res) => {
 
     let token = req.header("token");
-    const creditos = req.body.creditos;
+    const creditos = req.body.credito;
     let dToken;
 
     if (!token) {
@@ -213,10 +213,34 @@ module.exports.estacionar_post = async (req, res) => {
         id_vaga,
         duracao
     } = req.body;
+
     try {
+        let vaga = await Vaga.find({
+            id_vaga
+        });
+        if (vaga.length == 0) {
+            res.status(404).json({
+                error: "Vaga não encontrada"
+            });
+            return;
+        }
         const hora_inicio = new Date();
-        let hora_fim = new Date(hora_inicio).setMinutes(hora_inicio.getMinutes() + duracao);
-        //console.log(new Date(hora_fim).toUTCString());
+        let hora_fim = new Date(hora_inicio).setTime(hora_inicio.getTime() + (duracao * 60 * 60 * 1000));
+        let token = req.header("token");
+        let dToken;
+
+        if (!token) {
+            console.log("erro sem token");
+            return;
+        }
+
+        jwt.verify(token, jwtConfig.key, (err, decodedToken) => {
+            if (err) {
+                console.log(err.message);
+                return;
+            }
+            dToken = decodedToken;
+        });
 
         const reserva = await Estacionamento.create({
             placa_carro,
@@ -225,6 +249,11 @@ module.exports.estacionar_post = async (req, res) => {
             hora_fim
         });
 
+        let user = await User.findById(dToken.id);
+        const saldo = user.saldo - (duracao * 3);
+        await User.findByIdAndUpdate(dToken.id, {
+            saldo
+        });
         res.send({
             id_reserva: reserva._id
         });
@@ -242,7 +271,6 @@ module.exports.get_carros = async (req, res) => {
     jwt.verify(token, jwtConfig.key, (err, decodedToken) => {
         console.log("entrou no if");
         if (err) {
-            // console.log("ERRO==========");
             console.log(err.message);
             return;
         }
@@ -250,13 +278,27 @@ module.exports.get_carros = async (req, res) => {
         console.log(dToken);
     });
 
-    //console.log(dToken.id);
     const carros = await Carro.find({
         id_user: dToken.id
     });
-    console.log(carros);
+    let response = [];
+    for (const carro of carros) {
+        let estacionado = await Estacionamento.findOne({
+            placa_carro: carro.placa,
+            hora_fim: {
+                $gte: Date.now()
+            }
+        })
+        response.push({
+            carro,
+            estacionado
+        })
+        console.log("GHJK", estacionado)
+    }
+
+    console.log("response", response);
     res.send({
-        carros
+        response
     });
 
 };
@@ -274,11 +316,8 @@ module.exports.get_saldo = async (req, res) => {
             return;
         }
         dToken = decodedToken;
-        console.log("dtoken1:", dToken)
     });
 
-
-    console.log("dtoken2:", dToken)
     const user = (await User.find({
         _id: dToken.id
     }))[0];
