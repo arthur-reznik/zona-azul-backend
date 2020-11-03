@@ -50,10 +50,6 @@ const createToken = (id) => {
     })
 };
 
-module.exports.userSignup_get = (req, res) => {
-    res.render('signup');
-}
-
 module.exports.userSignup_post = async (req, res) => {
 
     try {
@@ -79,10 +75,6 @@ module.exports.userSignup_post = async (req, res) => {
             errors
         });
     }
-}
-
-module.exports.login_get = (req, res) => {
-    res.render('login');
 }
 
 module.exports.login_post = async (req, res) => {
@@ -262,6 +254,7 @@ module.exports.estacionar_post = async (req, res) => {
     }
 }
 
+//retorna uma lista com todos os carros do usuario atual
 module.exports.get_carros = async (req, res) => {
 
     let token = req.header("token");
@@ -302,10 +295,6 @@ module.exports.get_carros = async (req, res) => {
     });
 
 };
-
-module.exports.temp = (req, res) => {
-    res.render('temp');
-}
 
 module.exports.get_saldo = async (req, res) => {
     let dToken;
